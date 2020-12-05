@@ -1,0 +1,43 @@
+html {
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+  font-size: 62.5%;
+  @apply font-body text-base;
+}
+
+.btn {
+  @apply transform ease-in-out duration-500 text-gray-600 font-bold py-2 px-4 border-2 border-primary rounded;
+}
+
+.btn:hover {
+  @apply bg-primary text-gray-200;
+}
+
+.btn-rev {
+  @apply transform ease-in-out duration-500 text-gray-200 font-bold py-2 px-4 border-2 bg-primary border-primary rounded;
+}
+
+.btn-rev:hover {
+  @apply scale-110 shadow-xl;
+}
+
+.side-tab {
+  @apply flex items-center mt-5 py-2 px-4 text-gray-600 border-r-4 border-white w-48;
+}
+
+.side-tab:hover,
+.side-tab:focus,
+.league-active {
+  @apply bg-green-200 text-gray-700 border-primary;
+}
+
+.form-cell {
+  @apply shadow outline-none focus:ring appearance-none border border-green-200 rounded w-full py-2 px-3 text-gray-700 leading-tight;
+}
+
+.table-head {
+  @apply sticky top-0 p-3 font-bold uppercase  bg-gray-200 text-gray-600;
+}
+.table-cell {
+  @apply p-3 text-center;
+}
