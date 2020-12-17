@@ -9,15 +9,32 @@ export default {
     state.authUser = {
       uid: authUser.uid,
       email: authUser.email,
+      username: authUser.displayName,
     }
+  },
+  SET_CURRENT_GAMEWEEK: (state, payload) => {
+    state.currentGW = payload
+  },
+  SET_GENERAL_DATA: (state, payload) => {
+    state.generalData = payload
   },
   SET_ACTIVE_LEAGUE: (state, payload) => {
     state.activeLeague = payload
+  },
+  SET_ALL_LEAGUES: (state, { standard, freeHit }) => {
+    state.leagueArr = standard
+    state.freeHitLeague = freeHit
   },
   SET_SQUADS: (state, payload) => {
     state.squads[state.activeLeague] = payload
   },
   SET_STANDINGS: (state, payload) => {
     state.standings[state.activeLeague] = payload
+  },
+  SET_DEADLINE: (state, payload) => {
+    state.deadline = payload
+  },
+  SET_CURRENT_GW_CHECKED: (state, payload) => {
+    state.currentGW_finished = payload
   },
 }

@@ -1,50 +1,44 @@
 <template>
-  <div class="flex flex-col h-100">
-    <div class="overflow-y-auto">
-      <table class="border-collapse mx-auto">
-        <thead>
-          <tr>
-            <th class="table-head">Name</th>
-            <th class="table-head">Owned</th>
-            <th class="table-head">EO %</th>
-            <th class="table-head">(c)</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-primary bg-green-100">
-          <tr v-for="(player, idx) in ownership" :key="idx">
-            <td class="table-cell">{{ player.name }}</td>
-            <td class="table-cell">
-              {{ player.ownP }}
-            </td>
-            <td class="table-cell">
-              {{ player.eoP }}
-            </td>
-            <td class="table-cell">
-              {{ player.captained }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="flex flex-col h-100 overflow-y-auto w-1/3 mx-auto">
+    <table class="border-collapse">
+      <thead>
+        <tr>
+          <th class="table-head">Name</th>
+          <th class="table-head">Owned</th>
+          <th class="table-head">EO %</th>
+          <th class="table-head">(c)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-primary bg-green-100">
+        <tr v-for="(player, idx) in ownership" :key="idx">
+          <td class="table-cell">{{ player.name }}</td>
+          <td class="table-cell">
+            {{ player.ownP }}
+          </td>
+          <td class="table-cell">
+            {{ player.eoP }}
+          </td>
+          <td class="table-cell">
+            {{ player.captained }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 export default {
-  props: {
-    squads: Object,
-  },
   data() {
-    return {
-      players: null,
-    }
+    return {}
   },
   computed: {
     ...mapGetters(['getSquads', 'getActiveLeague']),
     ownership() {
       let players = []
-      const squads = this.getSquads
+      const squads = this.getSquads[this.getActiveLeague]
+
       for (let squad in squads) {
         squads[squad].forEach((player) => {
           if (!players.some((el) => el.name === player.name)) {

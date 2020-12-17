@@ -69,6 +69,7 @@ export default {
             this.$fire.firestore.collection('users').doc(user.user.uid).set({
               fplID: '',
               leagues: [],
+              freeHitLeague: '',
             })
             this.$router.push({ path: '/dashboard' })
           })

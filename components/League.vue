@@ -1,7 +1,10 @@
 <template>
-  <div class="mt-8 flex flex-col items-center w-full">
+  <div class="-mt-11 flex flex-col items-center w-full">
     <ul
-      class="flex cursor-pointer text-gray-600 border-solid border-b-2 border-green-200 font-bold"
+      class="flex cursor-pointer text-gray-600 border-solid border-b-2 border-green-200 font-bold onchange"
+      :class="{
+        'mr-72': getActiveLeague == 'freeHit' && activeTab == 'pickTeam',
+      }"
     >
       <li
         class="py-2 px-6 rounded-t-lg text-gray-500 bg-gray-200"
@@ -11,20 +14,30 @@
         Standings
       </li>
       <li
+        v-if="getActiveLeague != 'freeHit'"
         class="py-2 px-6 rounded-t-lg text-gray-500 bg-gray-200"
         :class="{ 'active-tab': activeTab == 'ownership' }"
         @click="activeTab = 'ownership'"
       >
         Ownership
       </li>
+      <li
+        v-if="getActiveLeague == 'freeHit'"
+        class="py-2 px-6 rounded-t-lg text-gray-500 bg-gray-200"
+        :class="{ 'active-tab': activeTab == 'pickTeam' }"
+        @click="activeTab = 'pickTeam'"
+      >
+        Pick A Team
+      </li>
     </ul>
 
-    <p v-if="$fetchState.pending"><LoadingSpinner /></p>
-    <p v-else-if="$fetchState.error">An error occurred :(</p>
-    <div v-else class="">
-      <transition name="fade" mode="out-in">
+    <div class="w-full" :class="{ 'flex justify-center': loading }">
+      <LoadingSpinner v-if="loading && $fetch.pending" class="mt-16" />
+      <p v-else-if="$fetchState.error">An error occurred :(</p>
+      <transition v-else name="fade" mode="out-in">
         <Standings v-if="activeTab == 'standings'" />
-        <PlayerOwnership v-if="activeTab == 'ownership'" />
+        <PlayerOwnership v-else-if="activeTab == 'ownership'" />
+        <PickTeam v-else-if="activeTab == 'pickTeam'" />
       </transition>
     </div>
     <button class="btn" @click="$fetch">Fetch data</button>
@@ -36,48 +49,115 @@ import { formatRelative } from 'date-fns'
 import PlayerOwnership from './PlayerOwnership.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import { mapGetters } from 'vuex'
+import { clearConfigCache } from 'prettier'
 export default {
   components: { PlayerOwnership, LoadingSpinner },
-  props: {
-    generalData: Object,
-  },
   data() {
     return {
-      gameWeek: 10,
+      gameWeek: 11,
       activeTab: 'standings',
-      squads: '',
-      standings: '',
+      loading: false,
     }
   },
   computed: {
-    ...mapGetters(['getStandings', 'getActiveLeague', 'getSquads']),
+    ...mapGetters([
+      'getStandings',
+      'getActiveLeague',
+      'getSquads',
+      'getCurrentGW',
+      'getGeneralData',
+      'getFreeHitLeague',
+      'getUsername',
+    ]),
   },
   fetchDelay: 2000,
-  async fetch() {
+  fetch() {
     //so it doesnt do api call if there are standings already
-    console.log('sup', this.getStandings)
-    if (!this.getStandings) {
-      console.log('object')
-      await this.$axios
+
+    if (this.getActiveLeague == 'freeHit') {
+      const fhteam = this.$fire.firestore
+        .collection('freeHitLeagues')
+        .doc(this.getFreeHitLeague)
+
+      fhteam.get().then((doc) => {
+        if (doc.exists) {
+          const squads = doc.data().squads
+          let standings = doc.data().standings
+          let gw = doc.data().gw
+
+          let newStandings = []
+          if (gw == this.getCurrentGW - 1) {
+            squads
+              .forEach((squad) => {
+                let team = standings.find((el) => {
+                  el.entry_name == squad.user
+                })
+
+                team = !!team
+                  ? team
+                  : {
+                      captain: '',
+                      event_total: 0,
+                      total: 0,
+                      entry_name: this.getUsername,
+                    }
+
+                let players = this.$store.getters.getPlayers
+                let captain = players.find((el) => {
+                  return el.id == squad.captain
+                })
+
+                let gwScore = captain.event_points
+
+                squad.team.forEach((el) => {
+                  const playerScore = players.find((player) => {
+                    return player.id == el.id
+                  }).event_points
+                  gwScore += playerScore
+                })
+
+                team.captain = captain.web_name
+                team.event_total = gwScore
+                team.total += gwScore
+                newStandings.push(team)
+              })
+              .then((standings) => {
+                fhteam
+                  .update({
+                    standings: standings,
+                  })
+                  .catch((err) => console.log('Error: ' + err))
+              })
+
+            return newStandings
+          } else {
+            this.$store.commit('SET_STANDINGS', standings)
+          }
+        }
+      })
+    } else if (!this.getStandings[this.getActiveLeague]) {
+      this.loading = true
+      this.$axios
         .$get(`leagues-classic/${this.getActiveLeague}/standings/`)
         .then((res) => {
-          console.log('res')
           // doesnt do api call if there are squads already
-          if (!this.getSquads) {
+          if (!this.getSquads[this.getActiveLeague]) {
             let squads = {}
             let standings = res.standings.results
 
+            this.$store.commit('SET_STANDINGS', standings)
+
             standings.forEach((player) => {
               this.$axios
-                .$get(`entry/${player.entry}/event/10/picks/`)
+                .$get(`entry/${player.entry}/event/${this.getCurrentGW}/picks/`)
                 .then((response) => {
                   squads[player.entry] = []
                   response.picks.forEach((footballer) => {
                     const id = footballer.element
-                    const playerInfo = this.generalData.elements.find(
+                    const playerInfo = this.getGeneralData.elements.find(
                       (x) => x.id === id
                     )
-                    const teamInfo = this.generalData.teams.find(
+                    const teamInfo = this.getGeneralData.teams.find(
                       (x) => x.id === playerInfo.team
                     )
 
@@ -96,14 +176,31 @@ export default {
                     })
                   })
 
-                  this.$store.commit('SET_STANDINGS', res.standings.results)
-
                   this.$store.commit('SET_SQUADS', squads)
+                })
+
+                .catch((err) => {
+                  console.log('Error :' + err)
                 })
             })
           }
         })
+        .then(() => {
+          this.loading = false
+        })
+        .catch((err) => {
+          console.log('Error :' + err)
+        })
     }
+  },
+  watch: {
+    getActiveLeague(newValue) {
+      this.activeTab = 'standings'
+      this.$fetch
+    },
+    loading(newValue) {
+      console.log('loading ' + newValue)
+    },
   },
   methods: {
     deadlineDate(date) {

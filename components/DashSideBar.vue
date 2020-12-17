@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col sm:flex-row">
-    <div class="w-40 h-full bg-white">
+    <div class="h-screen bg-white">
       <nav class="mt-10">
         <transition v-if="!userData.username" name="tab-fade" mode="out-in">
           <button
@@ -119,11 +119,22 @@
             :key="league.id"
             class="side-tab"
             :class="{
-              'league-active': activeLeague === league.id,
+              'league-active': getActiveLeague === league.id,
             }"
             @click="selectLeague(league.id)"
           >
             <span class="mx-auto font-bold">{{ league.name }}</span>
+          </button>
+        </div>
+        <div class="mt-20">
+          <button
+            class="side-tab"
+            :class="{
+              'league-active': getActiveLeague === 'freeHit',
+            }"
+            @click="selectLeague('freeHit')"
+          >
+            <span class="mx-auto font-bold">Free Hit League</span>
           </button>
         </div>
       </nav>
@@ -132,6 +143,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   props: ['user', 'userData'],
   data() {
@@ -143,9 +155,7 @@ export default {
     }
   },
   computed: {
-    activeLeague() {
-      return this.$store.getters.getActiveLeague
-    },
+    ...mapGetters(['getActiveLeague']),
   },
   methods: {
     async addUsername() {
@@ -182,29 +192,49 @@ export default {
       const fplID = this.$fire.firestore
         .collection('users')
         .doc(`${this.user.uid}`)
-      const leagueData = await this.$axios.$get(
-        `leagues-classic/${this.userData.league}/standings/`
-      )
-      try {
-        const saveLeague = {
-          id: this.userData.league,
-          name: leagueData.league.name,
+
+      if (!!parseInt(this.userData.league)) {
+        const leagueData = await this.$axios.$get(
+          `leagues-classic/${this.userData.league}/standings/`
+        )
+        try {
+          const saveLeague = {
+            id: this.userData.league,
+            name: leagueData.league.name,
+          }
+          this.userData.fplLeagues.push(saveLeague)
+
+          fplID.update({
+            leagues: this.userData.fplLeagues,
+          })
+
+          this.submitMsg = 'New fpl league added!'
+        } catch (error) {
+          this.submitMsg = error.message
         }
-        this.userData.fplLeagues.push(saveLeague)
+      } else {
+        const fhLeague = this.$fire.firestore
+          .collection('freeHitLeagues')
+          .doc(`${this.userData.league}`)
 
-        fplID.update({
-          leagues: this.userData.fplLeagues,
-        })
+        const leagueExists = await fhLeague.get()
+        if (leagueExists.exists) {
+          console.log(this.userData.freeHitLeague)
+          console.log('exists', this.userData.league)
+          this.userData.freeHitLeague = this.userData.league
 
-        this.submitMsg = 'New fpl league added!'
-      } catch (error) {
-        this.submitMsg = error.message
-
-        alert(error)
+          fplID.update({
+            freeHitLeague: this.userData.freeHitLeague,
+          })
+          this.submitMsg = `Joined the >> ${this.userData.league} << Free Hit League!`
+        } else {
+          this.submitMsg = 'There is no free hit league with that name!'
+        }
       }
     },
     async selectLeague(val) {
       this.$store.commit('SET_ACTIVE_LEAGUE', val)
+      this.$fetch
     },
   },
 }

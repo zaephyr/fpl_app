@@ -3,9 +3,8 @@
     <DashHeader :user="user" />
     <div class="flex">
       <DashSideBar :user="user" :userData="userData" />
-      <League v-if="isLeagueActive" :generalData="generalData" />
+      <League v-if="$store.getters.getActiveLeague" />
     </div>
-    <ProfileInfo :user="user" :userData="userData" />
   </div>
 </template>
 
@@ -19,16 +18,24 @@ export default {
         fplID: '',
         league: '',
         fplLeagues: [],
+        freeHitLeague: [],
       },
     }
   },
-  async asyncData({ $axios }) {
-    try {
-      const generalData = await $axios.$get('bootstrap-static/')
-      return { generalData }
-    } catch (error) {
-      console.log(error)
-    }
+  async fetch() {
+    await this.$axios.$get('bootstrap-static/').then((res) => {
+      const currGW = res.events.find((gw) => {
+        return gw.is_current
+      })
+      const nextGW = res.events.find((gw) => {
+        return gw.is_next
+      })
+
+      this.$store.commit('SET_DEADLINE', nextGW.deadline_time_epoch)
+      this.$store.commit('SET_CURRENT_GAMEWEEK', currGW.id)
+      this.$store.commit('SET_CURRENT_GW_CHECKED', currGW.finished)
+      this.$store.commit('SET_GENERAL_DATA', res)
+    })
   },
   mounted() {
     this.$fire.auth.onAuthStateChanged((user) => {
@@ -43,17 +50,20 @@ export default {
           if (doc.exists) {
             this.userData.fplID = doc.data().fplID
             this.userData.fplLeagues = doc.data().leagues
+            this.userData.freeHitLeague = doc.data().freeHitLeague
+
+            const allLeagues = {
+              standard: this.userData.fplLeagues,
+              freeHit: this.userData.freeHitLeague,
+            }
+
+            this.$store.commit('SET_ALL_LEAGUES', allLeagues)
           }
         })
         .catch(function (error) {
           console.log('Error getting document:', error)
         })
     })
-  },
-  computed: {
-    isLeagueActive() {
-      return this.$store.getters.getActiveLeague
-    },
   },
 }
 </script>

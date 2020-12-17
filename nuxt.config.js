@@ -42,6 +42,7 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/cloudinary',
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
@@ -53,6 +54,12 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
+  cloudinary: {
+    cloudName: process.env.CLOUDNAME,
+    apiKey: process.env.API_KEY,
+    apiSecret: process.env.API_SECRET,
+    useComponent: true,
+  },
   firebase: {
     lazy: false,
     config: {

@@ -13,7 +13,10 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-primary bg-green-100">
-          <tr v-for="player in getStandings" :key="player.id">
+          <tr
+            v-for="player in this.$store.state.standings[getActiveLeague]"
+            :key="player.id"
+          >
             <td class="table-cell">{{ player.entry_name }}</td>
             <td class="table-cell">
               {{ player.event_total }}
