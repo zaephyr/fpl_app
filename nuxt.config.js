@@ -5,10 +5,16 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'fantasy premier league',
+      },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
+  target: 'static',
+  ssr: false,
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: ['~/assets/main.scss'],
@@ -50,6 +56,7 @@ export default {
     baseURL:
       'https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/',
     debug: true,
+    proxyHeaders: false,
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)

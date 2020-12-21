@@ -74,9 +74,9 @@ export default {
       return false
     }
   },
-  getGWinProgress: (state) => {
+  isGameWeekFinished: (state) => {
     try {
-      return !state.currentGW_finished
+      return state.currentGW_finished
     } catch {
       return false
     }

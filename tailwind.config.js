@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   future: {
     // removeDeprecatedGapUtilities: true,
@@ -30,7 +32,7 @@ module.exports = {
         primary: '#20bf6b',
       },
       fontFamily: {
-        body: ['Roboto', 'Lato'],
+        body: ['Lato', ...defaultTheme.fontFamily.sans],
       },
       height: {
         100: '30rem',

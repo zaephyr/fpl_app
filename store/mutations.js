@@ -22,8 +22,12 @@ export default {
     state.activeLeague = payload
   },
   SET_ALL_LEAGUES: (state, { standard, freeHit }) => {
-    state.leagueArr = standard
-    state.freeHitLeague = freeHit
+    if (!!standard) {
+      state.leagueArr = standard
+    }
+    if (!!freeHit) {
+      state.freeHitLeague = freeHit
+    }
   },
   SET_SQUADS: (state, payload) => {
     state.squads[state.activeLeague] = payload

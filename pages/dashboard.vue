@@ -3,12 +3,13 @@
     <DashHeader :user="user" />
     <div class="flex">
       <DashSideBar :user="user" :userData="userData" />
-      <League v-if="$store.getters.getActiveLeague" />
+      <League v-if="getActiveLeague" />
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -23,19 +24,64 @@ export default {
     }
   },
   async fetch() {
-    await this.$axios.$get('bootstrap-static/').then((res) => {
-      const currGW = res.events.find((gw) => {
-        return gw.is_current
+    await this.$axios
+      .$get('bootstrap-static/')
+      .then((res) => {
+        const currGW = res.events.find((gw) => {
+          return gw.is_current
+        })
+        const nextGW = res.events.find((gw) => {
+          return gw.is_next
+        })
+        this.$store.commit('SET_DEADLINE', nextGW.deadline_time_epoch)
+        this.$store.commit('SET_CURRENT_GAMEWEEK', currGW.id)
+        this.$store.commit('SET_CURRENT_GW_CHECKED', currGW.finished)
+        this.$store.commit('SET_GENERAL_DATA', res)
       })
-      const nextGW = res.events.find((gw) => {
-        return gw.is_next
-      })
+      .then(() => {
+        if (this.isGameWeekFinished && this.getFreeHitLeague) {
+          const fhLeague = this.$fire.firestore
+            .collection('freeHitLeagues')
+            .doc(this.getFreeHitLeague)
 
-      this.$store.commit('SET_DEADLINE', nextGW.deadline_time_epoch)
-      this.$store.commit('SET_CURRENT_GAMEWEEK', currGW.id)
-      this.$store.commit('SET_CURRENT_GW_CHECKED', currGW.finished)
-      this.$store.commit('SET_GENERAL_DATA', res)
-    })
+          const fhLeagueData = fhLeague.get().then((doc) => {
+            const gw = doc.data().gw
+            const squads = doc.data().squads
+            const standings = doc.data().standings
+
+            console.log('Standings update!')
+            squads.forEach((squad) => {
+              let team = standings.find((el) => el.entry_name == squad.user)
+              let teamIndex = standings.findIndex(
+                (el) => el.entry_name == squad.user
+              )
+
+              let players = this.getPlayers
+              let captain = players.find((el) => {
+                return el.id == squad.captain
+              })
+              let gwScore = captain.event_points
+
+              squad.team.forEach((el) => {
+                const playerScore = players.find((player) => {
+                  return player.id == el.id
+                }).event_points
+                gwScore += playerScore
+              })
+
+              team.captain = captain.web_name
+              team.event_total = gwScore
+              team.total += gwScore
+              standings[teamIndex] = team
+            })
+
+            fhLeague.update({
+              standings: standings,
+              squads: [],
+            })
+          })
+        }
+      })
   },
   mounted() {
     this.$fire.auth.onAuthStateChanged((user) => {
@@ -64,6 +110,14 @@ export default {
           console.log('Error getting document:', error)
         })
     })
+  },
+  computed: {
+    ...mapGetters([
+      'getActiveLeague',
+      'getFreeHitLeague',
+      'getPlayers',
+      'isGameWeekFinished',
+    ]),
   },
 }
 </script>

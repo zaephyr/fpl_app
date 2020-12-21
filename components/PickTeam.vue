@@ -3,14 +3,16 @@
     <div class="flex flex-col items-center flex-grow mx-auto">
       <div class="flex justify-between w-1/3 my-4">
         <div class="flex flex-col font-bold">
-          <span v-if="!getGWinProgress" class="text-gray-500 text-xl"
+          <span v-if="isGameWeekFinished" class="text-gray-500 text-xl"
             >Deadline</span
           >
           <span
-            :class="[getGWinProgress ? 'text-red-400' : 'text-primary-light']"
+            :class="[
+              isGameWeekFinished ? 'text-primary-light' : 'text-red-400',
+            ]"
             class="text-xl w-20 text-center"
           >
-            {{ getGWinProgress ? 'GameWeek in progress' : getDeadline }}
+            {{ isGameWeekFinished ? getDeadline : 'GameWeek in progress' }}
           </span>
         </div>
 
@@ -219,8 +221,8 @@ export default {
       return parseInt(b.total_points) - parseInt(a.total_points)
     })
     this.teams = this.getTeams
-    if (this.getGWinProgress) {
-      this.errMsg = "Can't submit the sqaud during active game week!"
+    if (!this.isGameWeekFinished) {
+      this.errMsg = "Can't submit the squad during active game week!"
     }
   },
   computed: {
@@ -231,7 +233,7 @@ export default {
       'getCurrentGW',
       'getFreeHitLeague',
       'getDeadline',
-      'getGWinProgress',
+      'isGameWeekFinished',
     ]),
     animateBank() {
       return this.tweenedNumber.toFixed(1)
@@ -268,14 +270,14 @@ export default {
       this.sortPlayers()
     },
     teamSize(newVal) {
-      if (newVal == 11 && !this.getGWinProgress) {
+      if (newVal == 11 && this.isGameWeekFinished) {
         this.isTeamViable()
       } else {
         this.isDisabled = true
       }
     },
     captain(newVal) {
-      if (this.teamSize == 11 && !this.getGWinProgress) {
+      if (this.teamSize == 11 && this.isGameWeekFinished) {
         this.isTeamViable()
       }
     },
@@ -424,6 +426,7 @@ export default {
         .then((doc) => {
           if (doc.exists) {
             const squadArr = doc.data().squads
+
             const fhSquadData = {
               user: this.getUsername,
               gameweek: this.getCurrentGW + 1,
@@ -465,6 +468,8 @@ export default {
         .get()
         .then((doc) => {
           if (doc.exists) {
+            this.resetSquad()
+            this.bank = 0
             return doc
               .data()
               .squads.find((team) => team.user == this.getUsername)

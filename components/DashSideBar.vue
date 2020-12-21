@@ -155,7 +155,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getActiveLeague']),
+    ...mapGetters(['getActiveLeague', 'getUsername']),
   },
   methods: {
     async addUsername() {
@@ -204,13 +204,13 @@ export default {
           }
           this.userData.fplLeagues.push(saveLeague)
 
-          fplID.update({
+          await fplID.update({
             leagues: this.userData.fplLeagues,
           })
 
           this.submitMsg = 'New fpl league added!'
         } catch (error) {
-          this.submitMsg = error.message
+          return Promise.reject(error)
         }
       } else {
         const fhLeague = this.$fire.firestore
@@ -219,13 +219,36 @@ export default {
 
         const leagueExists = await fhLeague.get()
         if (leagueExists.exists) {
-          console.log(this.userData.freeHitLeague)
-          console.log('exists', this.userData.league)
           this.userData.freeHitLeague = this.userData.league
 
-          fplID.update({
-            freeHitLeague: this.userData.freeHitLeague,
-          })
+          try {
+            await fplID.update({
+              freeHitLeague: this.userData.freeHitLeague,
+            })
+
+            const allLeagues = {
+              standard: this.userData.fplLeagues,
+              freeHit: this.userData.freeHitLeague,
+            }
+
+            this.$store.commit('SET_ALL_LEAGUES', allLeagues)
+          } catch (error) {
+            return Promise.reject(error)
+          }
+
+          try {
+            await fhLeague.update({
+              standings: this.$fireModule.firestore.FieldValue.arrayUnion({
+                captain: '',
+                entry_name: this.getUsername,
+                event_total: 0,
+                total: 0,
+              }),
+            })
+          } catch (error) {
+            return Promise.reject(error)
+          }
+
           this.submitMsg = `Joined the >> ${this.userData.league} << Free Hit League!`
         } else {
           this.submitMsg = 'There is no free hit league with that name!'
