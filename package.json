@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/axios": "^5.12.4",
     "@nuxtjs/cloudinary": "^1.0.2",
     "@nuxtjs/firebase": "^7.1.1",
     "@nuxtjs/proxy": "^2.1.0",
