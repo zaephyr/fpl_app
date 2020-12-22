@@ -85,6 +85,7 @@ export default {
   },
   mounted() {
     this.$fire.auth.onAuthStateChanged((user) => {
+      console.log('v1.03')
       this.user = user
       this.userData.username = user.displayName
 

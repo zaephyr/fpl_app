@@ -15,6 +15,9 @@ export default {
   },
   target: 'static',
   ssr: false,
+  router: {
+    base: '/fpl_app/',
+  },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: ['~/assets/main.scss'],
@@ -58,13 +61,13 @@ export default {
     debug: true,
     proxyHeaders: false,
   },
-  proxy: {
-    '/api/': {
-      target: 'https://fantasy.premierleague.com/api/',
-      pathRewrite: { '^/api/': '' },
-      changeOrigin: true,
-    },
-  },
+  // proxy: {
+  //   '/api/': {
+  //     target: 'https://fantasy.premierleague.com/api/',
+  //     pathRewrite: { '^/api/': '' },
+  //     changeOrigin: true,
+  //   },
+  // },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
@@ -98,5 +101,4 @@ export default {
       },
     },
   },
-  privateRuntimeConfig: {},
 }
