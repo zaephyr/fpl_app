@@ -71,7 +71,6 @@ export default {
         })
       }
       const numSquads = Object.keys(squads).length
-      console.log(numSquads)
       players.forEach((player) => {
         const ownP = ((player.own / numSquads) * 100).toFixed(2)
         const eoP = ((player.eo / numSquads) * 100).toFixed(2)

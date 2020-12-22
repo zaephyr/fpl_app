@@ -89,7 +89,6 @@ export default {
           standings.sort((a, b) => {
             return b.total - a.total
           })
-          console.log(standings)
           this.$store.commit('SET_STANDINGS', standings)
         }
       })
@@ -104,9 +103,9 @@ export default {
         let squads = {}
         this.$store.commit('SET_STANDINGS', standings)
 
-        const promises = standings.forEach((player) => {
+        const promises = standings.forEach(async (player) => {
           squads[player.entry] = []
-          this.$axios
+          await this.$axios
             .$get(`entry/${player.entry}/event/${this.getCurrentGW}/picks/`)
             .then((playerTeam) => {
               playerTeam.picks.forEach((footballer) => {
