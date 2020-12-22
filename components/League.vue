@@ -45,7 +45,6 @@
         <PickTeam v-else-if="activeTab == 'pickTeam'" />
       </transition>
     </div>
-    <button class="btn" @click="$fetch">Fetch data</button>
   </div>
 </template>
 
