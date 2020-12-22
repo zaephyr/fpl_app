@@ -49,14 +49,21 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/cloudinary',
+    '@nuxtjs/proxy',
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    baseURL:
-      'https://cors-anywhere.herokuapp.com/https://fantasy.premierleague.com/api/',
+    baseURL: 'https://fantasy.premierleague.com/',
     debug: true,
     proxyHeaders: false,
+  },
+  proxy: {
+    '/api/': {
+      target: 'https://fantasy.premierleague.com/api/',
+      pathRewrite: { '^/api/': '' },
+      changeOrigin: true,
+    },
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)

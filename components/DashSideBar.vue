@@ -195,11 +195,12 @@ export default {
 
       if (!!parseInt(this.userData.league)) {
         const leagueData = await this.$axios.$get(
-          `leagues-classic/${this.userData.league}/standings/`
+          `api/leagues-classic/${this.userData.league}/standings/`
         )
         try {
           const saveLeague = {
             id: this.userData.league,
+
             name: leagueData.league.name,
           }
           this.userData.fplLeagues.push(saveLeague)

@@ -93,7 +93,7 @@ export default {
       })
     } else if (!this.getStandings[this.getActiveLeague]) {
       const leagueData = await this.$axios.$get(
-        `leagues-classic/${this.getActiveLeague}/standings/`
+        `api/leagues-classic/${this.getActiveLeague}/standings/`
       )
 
       // doesnt do api call if there are squads already
@@ -105,7 +105,7 @@ export default {
         const promises = standings.forEach(async (player) => {
           squads[player.entry] = []
           await this.$axios
-            .$get(`entry/${player.entry}/event/${this.getCurrentGW}/picks/`)
+            .$get(`api/entry/${player.entry}/event/${this.getCurrentGW}/picks/`)
             .then((playerTeam) => {
               playerTeam.picks.forEach((footballer) => {
                 const id = footballer.element

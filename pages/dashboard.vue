@@ -25,7 +25,7 @@ export default {
   },
   async fetch() {
     await this.$axios
-      .$get('bootstrap-static/')
+      .$get('api/bootstrap-static/')
       .then((res) => {
         const currGW = res.events.find((gw) => {
           return gw.is_current
