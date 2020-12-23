@@ -1,4 +1,4 @@
-import { fromUnixTime, format } from 'date-fns'
+import { fromUnixTime } from 'date-fns'
 
 export default {
   isLoggedIn: (state) => {
@@ -69,7 +69,11 @@ export default {
   },
   getDeadline: (state) => {
     try {
-      return format(state.deadline, 'MMM do')
+      let deadlineDate = fromUnixTime(state.deadline)
+      deadlineDate = deadlineDate.toString().split(' ')
+      deadlineDate = deadlineDate[2] + '. ' + deadlineDate[1]
+
+      return deadlineDate
     } catch {
       return false
     }

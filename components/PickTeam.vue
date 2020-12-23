@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full">
     <div class="flex flex-col items-center flex-grow mx-auto">
-      <div class="flex justify-between w-1/3 my-4">
+      <div class="flex justify-between w-1/2 my-4">
         <div class="flex flex-col font-bold">
           <span v-if="isGameWeekFinished" class="text-gray-500 text-xl"
             >Deadline</span
@@ -212,6 +212,7 @@ export default {
       tweenedNumber: 83,
       errMsg: '',
       isDisabled: true,
+      newDate: this.getDeadline,
     }
   },
 
@@ -426,6 +427,12 @@ export default {
         .then((doc) => {
           if (doc.exists) {
             const squadArr = doc.data().squads
+            const gw = doc.data().gw
+            if (gw != this.getCurrentGW + 1) {
+              fhLeague.update({
+                gw: this.getCurrentGW + 1,
+              })
+            }
 
             const fhSquadData = {
               user: this.getUsername,

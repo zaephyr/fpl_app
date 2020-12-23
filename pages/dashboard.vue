@@ -49,43 +49,45 @@ export default {
             const squads = doc.data().squads
             const standings = doc.data().standings
 
-            console.log('Standings update!')
-            squads.forEach((squad) => {
-              let team = standings.find((el) => el.entry_name == squad.user)
-              let teamIndex = standings.findIndex(
-                (el) => el.entry_name == squad.user
-              )
+            if (this.getCurrentGW == gw) {
+              console.log('Standings update!')
+              squads.forEach((squad) => {
+                let team = standings.find((el) => el.entry_name == squad.user)
+                let teamIndex = standings.findIndex(
+                  (el) => el.entry_name == squad.user
+                )
 
-              let players = this.getPlayers
-              let captain = players.find((el) => {
-                return el.id == squad.captain
+                let players = this.getPlayers
+                let captain = players.find((el) => {
+                  return el.id == squad.captain
+                })
+                let gwScore = captain.event_points
+
+                squad.team.forEach((el) => {
+                  const playerScore = players.find((player) => {
+                    return player.id == el.id
+                  }).event_points
+                  gwScore += playerScore
+                })
+
+                team.captain = captain.web_name
+                team.event_total = gwScore
+                team.total += gwScore
+                standings[teamIndex] = team
               })
-              let gwScore = captain.event_points
 
-              squad.team.forEach((el) => {
-                const playerScore = players.find((player) => {
-                  return player.id == el.id
-                }).event_points
-                gwScore += playerScore
+              fhLeague.update({
+                gw: this.currentGW + 1,
+                standings: standings,
+                squads: [],
               })
-
-              team.captain = captain.web_name
-              team.event_total = gwScore
-              team.total += gwScore
-              standings[teamIndex] = team
-            })
-
-            fhLeague.update({
-              standings: standings,
-              squads: [],
-            })
+            }
           })
         }
       })
   },
   mounted() {
     this.$fire.auth.onAuthStateChanged((user) => {
-      console.log('v1.03')
       this.user = user
       this.userData.username = user.displayName
 

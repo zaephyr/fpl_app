@@ -126,7 +126,7 @@
             <span class="mx-auto font-bold">{{ league.name }}</span>
           </button>
         </div>
-        <div class="mt-20">
+        <div class="mt-20" v-if="getFreeHitLeague">
           <button
             class="side-tab"
             :class="{
@@ -155,7 +155,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getActiveLeague', 'getUsername']),
+    ...mapGetters(['getActiveLeague', 'getUsername', 'getFreeHitLeague']),
+  },
+  watch: {
+    getUsername(newVal) {},
   },
   methods: {
     async addUsername() {
@@ -166,6 +169,7 @@ export default {
           })
           .then((user) => {
             console.log('success')
+            this.userData.username = this.user.displayName
             this.$router.push({ path: '/dashboard' })
           })
       } catch (error) {
@@ -213,7 +217,7 @@ export default {
         } catch (error) {
           return Promise.reject(error)
         }
-      } else {
+      } else if (this.getUsername || this.userData.username) {
         const fhLeague = this.$fire.firestore
           .collection('freeHitLeagues')
           .doc(`${this.userData.league}`)
@@ -254,6 +258,8 @@ export default {
         } else {
           this.submitMsg = 'There is no free hit league with that name!'
         }
+      } else {
+        this.submitMsg = 'Username is required for joining Free Hit League'
       }
     },
     async selectLeague(val) {
