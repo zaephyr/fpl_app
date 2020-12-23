@@ -13,11 +13,7 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-  target: 'static',
   ssr: false,
-  router: {
-    base: '/fpl_app/',
-  },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: ['~/assets/main.scss'],
@@ -57,17 +53,16 @@ export default {
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    baseURL: 'https://fantasy.premierleague.com/',
     debug: true,
+    proxy: true,
     proxyHeaders: false,
+    credentials: false,
   },
-  // proxy: {
-  //   '/api/': {
-  //     target: 'https://fantasy.premierleague.com/api/',
-  //     pathRewrite: { '^/api/': '' },
-  //     changeOrigin: true,
-  //   },
-  // },
+  proxy: {
+    '/api/': {
+      target: 'https://fantasy.premierleague.com/',
+    },
+  },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
