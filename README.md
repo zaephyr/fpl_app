@@ -22,10 +22,6 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/zaephyr/fpl_app">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
   <h3 align="center">App for Fantasy Premier League</h3>
 
   <p align="center">
@@ -34,7 +30,7 @@
     <a href="https://github.com/zaephyr/fpl_app"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href=" https://immense-woodland-89360.herokuapp.com/">View Demo</a>
+    <a href="https://immense-woodland-89360.herokuapp.com/">View Demo</a>
     ·
     <a href="https://github.com/zaephyr/fpl_app/issues">Report Bug</a>
     ·
