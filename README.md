@@ -34,7 +34,7 @@
     <a href="https://github.com/zaephyr/fpl_app"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="http://fpl-app.surge.sh/">View Demo</a>
+    <a href=" https://immense-woodland-89360.herokuapp.com/">View Demo</a>
     ·
     <a href="https://github.com/zaephyr/fpl_app/issues">Report Bug</a>
     ·
