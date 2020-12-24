@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-100 overflow-y-auto w-1/3 mx-auto">
+  <div class="flex flex-col h-100 overflow-y-auto min-w-max w-1/3 mx-auto">
     <table class="border-collapse">
       <thead>
         <tr>

@@ -108,7 +108,12 @@
             />
           </div>
         </transition>
-        <span class="text-primary"> {{ submitMsg }}</span>
+        <p
+          class="w-48 pl-2 text-center"
+          :class="[submitMsg.bool ? 'text-primary' : 'text-red-400']"
+        >
+          <span v-html="submitMsg.msg"></span>
+        </p>
 
         <div class="mt-16" v-if="userData.fplLeagues[0]">
           <span class="text-primary font-bold text-xl ml-4"
@@ -151,14 +156,24 @@ export default {
       usernameShow: false,
       fplUserShow: false,
       leagueShow: false,
-      submitMsg: '',
+      submitMsg: {
+        bool: null,
+        msg: ``,
+      },
     }
+  },
+  watch: {
+    submitMsg(newVal) {
+      setTimeout(() => {
+        this.submitMsg = {
+          bool: null,
+          msg: '',
+        }
+      }, 5000)
+    },
   },
   computed: {
     ...mapGetters(['getActiveLeague', 'getUsername', 'getFreeHitLeague']),
-  },
-  watch: {
-    getUsername(newVal) {},
   },
   methods: {
     async addUsername() {
@@ -173,7 +188,7 @@ export default {
             this.$router.push({ path: '/dashboard' })
           })
       } catch (error) {
-        this.submitMsg = error.message
+        this.submitMsg = { bool: false, msg: error.message }
         console.log(error)
       }
     },
@@ -185,9 +200,9 @@ export default {
         await fplID.update({
           fplID: this.userData.fplID,
         })
-        this.submitMsg = 'Fpl ID saved!'
+        this.submitMsg = { bool: true, msg: 'Fpl ID saved!' }
       } catch (error) {
-        this.submitMsg = error.message
+        this.submitMsg = { bool: false, msg: error.message }
 
         alert(error)
       }
@@ -198,25 +213,30 @@ export default {
         .doc(`${this.user.uid}`)
 
       if (!!parseInt(this.userData.league)) {
-        const leagueData = await this.$axios.$get(
-          `api/leagues-classic/${this.userData.league}/standings/`
-        )
-        try {
-          const saveLeague = {
-            id: this.userData.league,
+        await this.$axios
+          .$get(`api/leagues-classic/${this.userData.league}/standings/`)
+          .then((leagueData) => {
+            try {
+              const saveLeague = {
+                id: this.userData.league,
 
-            name: leagueData.league.name,
-          }
-          this.userData.fplLeagues.push(saveLeague)
+                name: leagueData.league.name,
+              }
+              this.userData.fplLeagues.push(saveLeague)
 
-          await fplID.update({
-            leagues: this.userData.fplLeagues,
+              fplID.update({
+                leagues: this.userData.fplLeagues,
+              })
+
+              this.submitMsg = { bool: true, msg: 'New fpl league added!' }
+            } catch (error) {
+              this.submitMsg = { bool: false, msg: 'Somethings went wrong!' }
+              return Promise.reject(error)
+            }
           })
-
-          this.submitMsg = 'New fpl league added!'
-        } catch (error) {
-          return Promise.reject(error)
-        }
+          .catch((err) => {
+            this.submitMsg = { bool: false, msg: "ID doesn't exist" }
+          })
       } else if (this.getUsername || this.userData.username) {
         const fhLeague = this.$fire.firestore
           .collection('freeHitLeagues')
@@ -245,7 +265,7 @@ export default {
             await fhLeague.update({
               standings: this.$fireModule.firestore.FieldValue.arrayUnion({
                 captain: '',
-                entry_name: this.getUsername,
+                entry_name: this.getUsername ?? this.userData.username,
                 event_total: 0,
                 total: 0,
               }),
@@ -254,12 +274,21 @@ export default {
             return Promise.reject(error)
           }
 
-          this.submitMsg = `Joined the >> ${this.userData.league} << Free Hit League!`
+          this.submitMsg = {
+            bool: true,
+            msg: `Joined the<br/> >> ${this.userData.league} <br/><< Free Hit League!`,
+          }
         } else {
-          this.submitMsg = 'There is no free hit league with that name!'
+          this.submitMsg = {
+            bool: false,
+            msg: 'There is no free hit <br/> league with that name!',
+          }
         }
       } else {
-        this.submitMsg = 'Username is required for joining Free Hit League'
+        this.submitMsg = {
+          bool: false,
+          msg: 'Username is required <br/> for joining Free Hit League',
+        }
       }
     },
     async selectLeague(val) {
