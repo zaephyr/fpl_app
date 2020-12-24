@@ -155,8 +155,6 @@ On left side is a menu with Username (tester), standard league (#Elite64) and Fr
 
 For Free Hit League, official team [rules](https://fantasy.premierleague.com/help), exept there are 11 players to be picked instead of 15 (no bench) and starting bank is 83m instead of 100m.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
 <!-- ROADMAP -->
 
 ## Roadmap
