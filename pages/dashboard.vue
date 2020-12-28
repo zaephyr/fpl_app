@@ -39,7 +39,7 @@ export default {
         this.$store.commit('SET_GENERAL_DATA', res)
       })
       .then(() => {
-        if (this.isGameWeekFinished && this.getFreeHitLeague) {
+        if (this.isGameWeekFinished) {
           const fhLeague = this.$fire.firestore
             .collection('freeHitLeagues')
             .doc(this.getFreeHitLeague)
@@ -48,7 +48,6 @@ export default {
             const gw = doc.data().gw
             const squads = doc.data().squads
             const standings = doc.data().standings
-
             if (this.getCurrentGW == gw) {
               console.log('Standings update!')
               squads.forEach((squad) => {
@@ -120,6 +119,7 @@ export default {
       'getFreeHitLeague',
       'getPlayers',
       'isGameWeekFinished',
+      'getCurrentGW',
     ]),
   },
 }
