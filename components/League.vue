@@ -22,6 +22,14 @@
         Ownership
       </li>
       <li
+        v-if="getActiveLeague != 'freeHit'"
+        class="py-2 px-6 rounded-t-lg text-gray-500 bg-gray-200"
+        :class="{ 'active-tab': activeTab == 'visuals' }"
+        @click="activeTab = 'visuals'"
+      >
+        Visuals
+      </li>
+      <li
         v-if="getActiveLeague == 'freeHit'"
         class="py-2 px-6 rounded-t-lg text-gray-500 bg-gray-200"
         :class="{ 'active-tab': activeTab == 'pickTeam' }"
@@ -43,6 +51,7 @@
         <Standings v-if="activeTab == 'standings'" />
         <PlayerOwnership v-else-if="activeTab == 'ownership'" />
         <PickTeam v-else-if="activeTab == 'pickTeam'" />
+        <Visualizations v-else-if="activeTab == 'visuals'" />
       </transition>
     </div>
   </div>
@@ -50,10 +59,10 @@
 
 <script>
 import PlayerOwnership from './PlayerOwnership.vue'
-import LoadingSpinner from './LoadingSpinner.vue'
 import { mapGetters } from 'vuex'
+import Visualizations from './Visualizations.vue'
 export default {
-  components: { PlayerOwnership, LoadingSpinner },
+  components: { PlayerOwnership, Visualizations },
   data() {
     return {
       activeTab: 'standings',

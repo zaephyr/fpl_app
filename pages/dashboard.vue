@@ -39,50 +39,23 @@ export default {
         this.$store.commit('SET_GENERAL_DATA', res)
       })
       .then(() => {
-        if (this.isGameWeekFinished) {
-          const fhLeague = this.$fire.firestore
-            .collection('freeHitLeagues')
-            .doc(this.getFreeHitLeague)
+        const fhLeague = this.$fire.firestore
+          .collection('freeHitLeagues')
+          .doc(this.getFreeHitLeague)
 
-          const fhLeagueData = fhLeague.get().then((doc) => {
-            const gw = doc.data().gw
-            const squads = doc.data().squads
-            const standings = doc.data().standings
-            if (this.getCurrentGW == gw) {
-              console.log('Standings update!')
-              squads.forEach((squad) => {
-                let team = standings.find((el) => el.entry_name == squad.user)
-                let teamIndex = standings.findIndex(
-                  (el) => el.entry_name == squad.user
-                )
-
-                let players = this.getPlayers
-                let captain = players.find((el) => {
-                  return el.id == squad.captain
-                })
-                let gwScore = captain.event_points
-
-                squad.team.forEach((el) => {
-                  const playerScore = players.find((player) => {
-                    return player.id == el.id
-                  }).event_points
-                  gwScore += playerScore
-                })
-
-                team.captain = captain.web_name
-                team.event_total = gwScore
-                team.total += gwScore
-                standings[teamIndex] = team
-              })
-
-              fhLeague.update({
-                gw: this.currentGW + 1,
-                standings: standings,
-                squads: [],
-              })
-            }
-          })
-        }
+        const fhLeagueData = fhLeague.get().then((doc) => {
+          const gw = doc.data().gw
+          const squads = doc.data().squads
+          const standings = doc.data().standings
+          console.log(gw)
+          if (this.isGameWeekFinished && this.getCurrentGW == gw) {
+            console.log('Standings update!')
+            this.standingsUpdate(squads, standings, fhLeague)
+          } else if (this.getCurrentGW > gw) {
+            console.log('sup')
+            this.standingsUpdate(squads, standings, fhLeague)
+          }
+        })
       })
   },
   mounted() {
@@ -121,6 +94,38 @@ export default {
       'isGameWeekFinished',
       'getCurrentGW',
     ]),
+  },
+  methods: {
+    standingsUpdate(squads, standings, fhLeague) {
+      squads.forEach((squad) => {
+        let team = standings.find((el) => el.entry_name == squad.user)
+        let teamIndex = standings.findIndex((el) => el.entry_name == squad.user)
+
+        let players = this.getPlayers
+        let captain = players.find((el) => {
+          return el.id == squad.captain
+        })
+        let gwScore = captain.event_points
+
+        squad.team.forEach((el) => {
+          const playerScore = players.find((player) => {
+            return player.id == el.id
+          }).event_points
+          gwScore += playerScore
+        })
+
+        team.captain = captain.web_name
+        team.event_total = gwScore
+        team.total += gwScore
+        standings[teamIndex] = team
+      })
+
+      fhLeague.update({
+        gw: 20,
+        standings: standings,
+        squads: [],
+      })
+    },
   },
 }
 </script>
