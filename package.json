@@ -11,13 +11,14 @@
     "test": "jest"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/axios": "^5.12.5",
     "@nuxtjs/cloudinary": "^1.0.2",
     "@nuxtjs/firebase": "^7.1.1",
     "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/pwa": "^3.0.2",
     "cookieparser": "^0.1.0",
     "core-js": "^3.6.5",
+    "d3": "^6.4.0",
     "date-fns": "^2.16.1",
     "firebase": "^8.0.2",
     "fontsource-roboto": "^3.1.5",
