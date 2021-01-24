@@ -9,4 +9,5 @@ export default () => ({
   currentGW: null,
   currentGW_finished: null,
   deadline: null,
+  fplID: null,
 })

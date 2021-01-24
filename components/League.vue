@@ -61,6 +61,7 @@
 import PlayerOwnership from './PlayerOwnership.vue'
 import { mapGetters } from 'vuex'
 import Visualizations from './Visualizations.vue'
+import { clearConfigCache } from 'prettier'
 export default {
   components: { PlayerOwnership, Visualizations },
   data() {
@@ -141,6 +142,8 @@ export default {
               })
             })
         })
+
+        console.log(promises)
 
         this.$store.commit('SET_SQUADS', squads)
       }

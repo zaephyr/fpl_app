@@ -22,6 +22,13 @@ export default {
       return false
     }
   },
+  getFplID: (state) => {
+    try {
+      return state.fplID
+    } catch (error) {
+      return false
+    }
+  },
   getGeneralData: (state) => {
     try {
       return state.generalData

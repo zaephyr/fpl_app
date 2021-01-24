@@ -79,6 +79,7 @@ export default {
             }
 
             this.$store.commit('SET_ALL_LEAGUES', allLeagues)
+            this.$store.commit('SET_FPL_ID', this.userData.fplID)
           }
         })
         .catch(function (error) {

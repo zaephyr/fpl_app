@@ -12,6 +12,10 @@ export default {
       username: authUser.displayName,
     }
   },
+  SET_FPL_ID: (state, payload) => {
+    state.fplID = payload
+  },
+
   SET_CURRENT_GAMEWEEK: (state, payload) => {
     state.currentGW = payload
   },
