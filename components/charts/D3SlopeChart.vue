@@ -109,7 +109,7 @@ export default {
     },
     renderSlopeChart(data) {
       const width = 600
-      const height = 400
+      const height = 500
       const margin = { top: 40, right: 120, bottom: 10, left: 120 }
       const padding = 5
       const adj = 30
@@ -118,7 +118,7 @@ export default {
         .append('svg')
         .attr('viewBox', [0, 0, width, height])
         .attr('font-family', 'sans-serif')
-        .attr('font-size', 10)
+        .attr('font-size', 12)
         .classed('svg-content', true)
 
       function halo(text) {
@@ -159,7 +159,6 @@ export default {
         .y((d) => {
           return yScale(d)
         })
-      console.log(data)
 
       const lines = svg
         .selectAll('.line')

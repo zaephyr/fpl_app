@@ -1,5 +1,5 @@
 <template>
-  <div id="rh-multiline" class="svg-content"></div>
+  <div id="rh-multiline" class="svg-content w-full"></div>
 </template>
 
 <script>
@@ -35,7 +35,6 @@ export default {
         let startingGW = el.gwTotal[0].gameWeek
 
         while (startingGW != 1) {
-          console.log(startingGW)
           obj.values.unshift({ gameWeek: startingGW - 1, total: 0 })
           startingGW--
         }
@@ -43,13 +42,12 @@ export default {
       return obj
     })
 
-    console.log(this.numGW, cleanedData)
     this.renderMultiLineChart(cleanedData)
   },
   methods: {
     renderMultiLineChart(rank_val) {
       const width = 800
-      const height = 400
+      const height = 500
       const margin = 5
       const padding = 5
       const adj = 30

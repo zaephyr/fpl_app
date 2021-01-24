@@ -112,7 +112,7 @@ export default {
         let squads = {}
         this.$store.commit('SET_STANDINGS', standings)
 
-        const promises = standings.forEach(async (player) => {
+        standings.forEach(async (player) => {
           squads[player.entry] = []
           await this.$axios
             .$get(`api/entry/${player.entry}/event/${this.getCurrentGW}/picks/`)
@@ -142,8 +142,6 @@ export default {
               })
             })
         })
-
-        console.log(promises)
 
         this.$store.commit('SET_SQUADS', squads)
       }
