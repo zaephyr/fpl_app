@@ -20,7 +20,7 @@
     "core-js": "^3.6.5",
     "d3": "^6.3.1",
     "date-fns": "^2.16.1",
-    "firebase": "^8.0.2",
+    "firebase": "^8.6.3",
     "fontsource-roboto": "^3.1.5",
     "gsap": "^3.5.1",
     "js-cookie": "^2.2.1",
