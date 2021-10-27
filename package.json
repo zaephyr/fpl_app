@@ -43,7 +43,7 @@
     "postcss": "^7.0.35",
     "prettier": "^2.1.2",
     "push-dir": "^0.4.1",
-    "sass": "^1.28.0",
+    "sass": "^1.43.4",
     "sass-loader": "^10.0.5",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.1",
     "vue-jest": "^3.0.4"
